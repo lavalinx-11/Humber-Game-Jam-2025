@@ -1,0 +1,90 @@
+using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
+using UnityEngine.UI;
+
+public class PlayerScript : MonoBehaviour
+{
+    
+    public float speed;
+    public float maxSpeed;
+    public float acceleration;
+    private float _move;
+    private Rigidbody2D _rigidBody;
+    public GameObject panel;
+    public GameObject youLose; // Reference to the Button GameObject
+
+    [SerializeField] private AudioClip Hurt;
+
+
+    private bool isDead = false; // To track player death
+    private void Awake()
+    {
+        _rigidBody = GetComponent<Rigidbody2D>();
+    }
+    
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        if (youLose != null)
+        {
+            youLose.SetActive(false);
+        }
+    }
+
+    public void OnPlayerDeath()
+    {
+        isDead = true;
+
+        // Show the button
+        if (youLose != null)
+        {
+                panel.SetActive(!panel.activeSelf);
+                youLose.SetActive(true);
+        }
+    }
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        Debug.Log("Im about to cuuuoolli");
+
+        if (other.gameObject.tag == "Enemy")
+        {
+            SoundFXManager.instance.PlaySoundFXClip(Hurt, transform, 1f);
+            Debug.Log("collided");
+        }
+    }
+
+
+    void OnTriggerEnter2D(Collider2D other) 
+    {
+        if (other.CompareTag("LowerBoundary")) 
+        {
+            OnPlayerDeath();
+            GameManager.Instance.GameOver();
+        }
+
+    }
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        Vector3 force = new Vector3(0, acceleration, 0);
+        _rigidBody.AddForce(force, ForceMode2D.Force);
+        
+        if (_rigidBody.linearVelocityY > maxSpeed)
+        {
+            _rigidBody.linearVelocityY = maxSpeed;
+        }
+        
+        _move = Input.GetAxis("Horizontal");
+        _rigidBody.linearVelocity = new Vector2(_move * speed, _rigidBody.linearVelocity.y);
+
+        if (_rigidBody.position.x > 4.5f)
+        {
+            _rigidBody.transform.position = new Vector2(4.5f, _rigidBody.position.y);
+        } else if (_rigidBody.position.x < -4.5f)
+        {
+            _rigidBody.transform.position = new Vector2(-4.5f, _rigidBody.position.y);
+        }
+    }
+}
