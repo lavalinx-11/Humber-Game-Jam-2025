@@ -1,0 +1,28 @@
+using UnityEngine;
+
+public class Movement : MonoBehaviour
+{
+    public float moveSpeed = 10f; // Speed of the player
+
+    private Rigidbody2D rb;
+    private Vector2 movement;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody2D>(); // Get the Rigidbody2D component
+    }
+
+    void Update()
+    {
+        //Vector3 force = new Vector3(0, 5f, 0);
+        //rb.AddForce(force, ForceMode2D.Force);
+        movement.x = Input.GetAxis("Horizontal"); // A/D or Left/Right keys
+        //movement.y = Input.GetAxis("Vertical");   // W/S or Up/Down keys
+    }
+
+    void FixedUpdate()
+    {
+
+        rb.linearVelocity = new Vector2(movement.x * moveSpeed, rb.linearVelocity.y);
+    }
+}
