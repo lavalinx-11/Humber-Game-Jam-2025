@@ -1,0 +1,60 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class Spawner : MonoBehaviour
+{
+    public GameObject FallingThingy;
+    public List<GameObject> prefabs;
+    public Transform Spawn;
+    public Transform SpawnCenter;     
+    public float spawnRadius = 2f;    
+    public float spawnInterval = 0.5f;
+    public float lifeTime = 2f;
+    public float direction = 1.0f;
+
+
+
+    private void Start()
+    {
+        InvokeRepeating(nameof(SpawnIn), spawnInterval, spawnInterval);
+    }
+
+    public void SpawnIn()
+    {
+        //GameObject NewBullet = Instantiate(FallingThingy, Spawn.position, Spawn.rotation);
+        Vector3 randomPosition = SpawnCenter.position + Random.insideUnitSphere * spawnRadius;
+        randomPosition.y = SpawnCenter.position.y;
+        
+        int randomIndex = Random.Range(0, prefabs.Count);
+        GameObject fallingObj = Instantiate(prefabs[randomIndex], randomPosition, SpawnCenter.rotation);
+        if (direction < 0)
+        {
+            fallingObj.transform.localScale = new Vector3(-fallingObj.transform.localScale.x, fallingObj.transform.localScale.y, fallingObj.transform.localScale.z);
+            HorizontalHazard script = fallingObj.GetComponent<HorizontalHazard>();
+            script.direction = direction;
+        }
+        
+        Destroy(fallingObj, lifeTime);
+                
+        if (fallingObj.GetComponent<Rigidbody2D>())
+        {
+            Debug.Log("Clone has Rigidbody2D");
+        }
+        else
+        {
+            Debug.LogError("Clone is missing Rigidbody2D!");
+        }
+    }
+
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SpawnIn(); // Spawns the bullet when the spacebar is pressed.
+        }
+ 
+    }
+
+}
