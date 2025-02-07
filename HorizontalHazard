@@ -1,0 +1,60 @@
+
+
+using UnityEngine;
+
+
+public class HorizontalHazard : MonoBehaviour
+{
+    public float speed = 5f; // Movement speed
+    public float direction = 1.0f;
+
+
+    private Rigidbody2D _rigidbody;
+    private Vector2 _screenBounds;
+    private float _objectWidth;
+
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        
+        if (other.CompareTag("RightWall"))
+        {
+            GameManager.Instance.GameOver();
+        }
+    }
+
+
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        _rigidbody = GetComponent<Rigidbody2D>();
+
+
+        // Calculate the screen bounds
+        _screenBounds = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, Camera.main.transform.position.z));
+        _objectWidth = transform.GetComponent<SpriteRenderer>().bounds.extents.x; // Half the width of the object
+    }
+
+
+    // Update is called once per frame
+    void Update()
+    {
+        _rigidbody.linearVelocity = new Vector2(speed, _rigidbody.linearVelocity.y) * direction;
+        if (direction > 0)
+        {
+            if (transform.position.x > _screenBounds.x + _objectWidth)
+            {
+                // Move the object to the left side of the screen
+                transform.position = new Vector3(-_screenBounds.x - _objectWidth, transform.position.y, transform.position.z);
+            }
+        }
+        else
+        {
+            if (transform.position.x < -_screenBounds.x - _objectWidth)
+            {
+                // Move the object to the left side of the screen
+                transform.position = new Vector3(_screenBounds.x + _objectWidth, transform.position.y, transform.position.z);
+            }
+        }
+    }
+}
