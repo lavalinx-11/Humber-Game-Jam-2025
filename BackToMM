@@ -1,0 +1,9 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+public class BackToMM : MonoBehaviour
+{
+    public void PlayGame()
+    {
+        SceneManager.LoadSceneAsync(0);
+    }
+}
