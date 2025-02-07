@@ -1,0 +1,87 @@
+using UnityEngine;
+using UnityEngine.UIElements;
+
+public class GameManager : MonoBehaviour
+{
+
+    public GameObject lowerBoundary;
+    public GameObject player;
+    public GameObject spawner;
+    public GameObject fallingSpawner; 
+    public GameObject horizontalSpawner;
+    public GameObject horizontalSpawner2;
+    public UIDocument gameOverDoc;
+
+    private VisualElement _gameOverPanel;
+    private Rigidbody2D _lowerBoundaryRigidbody2D;
+    private Rigidbody2D _spawnerRigidbody2D;
+    private Rigidbody2D _fallingSpawnerRigidbody2D;
+    private Rigidbody2D _horizontalSpawnerRigidbody2D;
+    private Rigidbody2D _horizontalSpawnerRigidbody2D2;
+
+
+
+    private const float DistanceFromCamera = 2.7f;
+    public static GameManager Instance { get; private set; }
+    private void Awake()
+        {
+
+            if (Instance != null)
+            {
+                Destroy(gameObject);
+                return;
+            }
+            Instance = this;
+        }
+    
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        _lowerBoundaryRigidbody2D = lowerBoundary.GetComponent<Rigidbody2D>();
+        _spawnerRigidbody2D = spawner.GetComponent<Rigidbody2D>();
+        _fallingSpawnerRigidbody2D = fallingSpawner.GetComponent<Rigidbody2D>();
+        _horizontalSpawnerRigidbody2D = horizontalSpawner.GetComponent<Rigidbody2D>();
+        if (horizontalSpawner2 != null)
+        {
+            _horizontalSpawnerRigidbody2D2 = horizontalSpawner2?.GetComponent<Rigidbody2D>(); 
+        }
+        
+
+        
+        _gameOverPanel = gameOverDoc.rootVisualElement.Q<VisualElement>("GameOverPanel");
+        _gameOverPanel.style.visibility = Visibility.Hidden;
+    }
+    
+    public void GameOver()
+    {
+        Time.timeScale = 0f; // Pauses the game
+        lowerBoundary?.SetActive(false);
+        player?.SetActive(false);
+        spawner?.SetActive(false);
+        fallingSpawner?.SetActive(false);
+        horizontalSpawner?.SetActive(false);
+        horizontalSpawner2?.SetActive(false);
+    }
+
+    // Update is called once per frame
+    
+    
+    void FixedUpdate()
+    {
+        
+        _lowerBoundaryRigidbody2D.linearVelocityY = 2.0f;
+        _spawnerRigidbody2D.linearVelocityY = 2.0f;
+        _fallingSpawnerRigidbody2D.linearVelocityY = 2.0f;
+        _horizontalSpawnerRigidbody2D.linearVelocityY = 2.0f;
+        if (_horizontalSpawnerRigidbody2D2 != null)
+        {
+            _horizontalSpawnerRigidbody2D2.linearVelocityY = 2.0f;
+        }
+        
+        Vector3 cameraPosition = Camera.main.transform.position;
+        Camera.main.transform.position = new Vector3(
+            0.0f,
+            lowerBoundary.transform.position.y + DistanceFromCamera,
+            cameraPosition.z);
+    }
+}
