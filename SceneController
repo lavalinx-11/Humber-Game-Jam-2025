@@ -1,0 +1,71 @@
+using System;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Video;
+using System.Collections; // Required for IEnumerator
+
+public class SceneController : MonoBehaviour
+{
+    // Static instance to access everywhere
+    public static SceneController instance;
+
+    // Reference to the VideoPlayer
+    public VideoPlayer videoPlayer;
+
+    // Don't destroy on loading a new scene 
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public void PlayVideoAndLoadNextScene()
+    {
+        if (videoPlayer != null)
+        {
+            StartCoroutine(PlayVideoCoroutine());
+        }
+        else
+        {
+            // If no video, just load the next scene
+            NextLevel1();
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        throw new NotImplementedException();
+    }
+
+    private IEnumerator PlayVideoCoroutine()
+    {
+        // Play the video
+        videoPlayer.Play();
+
+        // Wait for the video to finish playing
+        yield return new WaitForSeconds((float)videoPlayer.clip.length);
+
+        // Load the next scene
+        NextLevel1();
+    }
+
+    public void NextLevel1()
+    {
+        // Load the next scene in the build index
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
+    public void LoadScene(string sceneName)
+    {
+        // Load a specific scene by name
+        SceneManager.LoadSceneAsync(sceneName);
+    }
+}
+
